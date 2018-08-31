@@ -66,7 +66,15 @@ defmodule RemoteIp do
   def init(opts \\ []) do
     headers = Keyword.get(opts, :headers, @headers)
     headers = MapSet.new(headers)
-    proxies = Keyword.get(opts, :proxies, @proxies) ++ @reserved
+    use_reserved = Keyword.get(opts, :use_reserved, true)
+
+    proxies =
+      if use_reserved
+        Keyword.get(opts, :proxies, @proxies) ++ @reserved
+      else
+        Keyword.get(opts, :proxies, @proxies)
+      end
+
     proxies = proxies |> Enum.map(&InetCidr.parse/1)
 
     {headers, proxies}
